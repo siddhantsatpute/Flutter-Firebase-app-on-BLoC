@@ -6,7 +6,6 @@ part of 'loginscreen_bloc.dart';
 
 ///These states are triggered or 'yield' from the [LoginscreenBloc]
 
-
 ///Declaration of abstract class [LoginscreenState] extending [Equatable], which is
 ///extended by all the state classes declared below.
 @immutable
@@ -47,6 +46,14 @@ class LoginScreenLoginFailedState extends LoginscreenState {
   const LoginScreenLoginFailedState();
   @override
   List<Object?> get props => [];
+}
+
+//Login to register screen navigation state
+class LoginScreenMoveToRegisterScreenState extends LoginscreenState {
+  const LoginScreenMoveToRegisterScreenState();
+
+  @override
+  List<Object> get props => [];
 }
 
 //Login unknown state

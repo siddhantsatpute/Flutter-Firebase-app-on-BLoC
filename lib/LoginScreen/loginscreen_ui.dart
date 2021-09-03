@@ -9,7 +9,9 @@ import 'dart:developer';
 import 'dart:ui';
 
 import 'package:firebase_app_bloc/LoginScreen/loginscreen_bloc.dart';
+import 'package:firebase_app_bloc/RegisterScreen/registerscreen_ui.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -49,11 +51,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   ///[BlocListener] -> It is used as the child of the [BlocProvider] method. This widget listens
   ///for the state changes for the screen.
-  ///NOTE : If want to show dialog, snackbar, or toast or any other UI widgets which does not
-  ///have direct connection with screen UI, should be handled inside [BlocListener].
+  ///NOTE : If want to show dialog, snackbar, or toast or navigator to move on another screen or
+  ///any other UI widgets which does not have direct connection with screen UI, should be handled
+  ///inside [BlocListener].
 
   ///[BlocBuilder] -> It is used as the child of [BlocListener]. This widget is
   ///responsible to handle the different states of the Login Screen which is declared in [LoginscreenState]
+  ///and to build/update the UI as the state changes.
 
   ///Inside every state there is a trigger to update to state when the operation is performed.
   ///As we declared the [_loginscreenBloc] as the instance of [LoginscreenBloc], so to update the state
@@ -77,7 +81,15 @@ class _LoginScreenState extends State<LoginScreen> {
                   Timer(Duration(seconds: 5), () {
                     _loginscreenBloc.add(LoginScreenLoginSuccessEvent());
                   });
-                  return showLoader(context);
+                  loginForm(context);
+                  showLoader(context);
+                } //State to handle avigation to register screen
+                else if (state is LoginScreenMoveToRegisterScreenState) {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => RegisterScreen(),
+                          maintainState: true));
                 }
 
                 ///All the widgets which is not binded directly with the UI of the screen,
@@ -132,32 +144,49 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget loginForm(BuildContext context) {
     return Form(
         child: Container(
-      margin: EdgeInsets.only(left: 10, right: 10),
+      decoration: BoxDecoration(
+          gradient: LinearGradient(colors: [
+        //Colors.teal.shade200,
+        Colors.lightBlue.shade100,
+        Colors.deepPurple.shade300
+      ], stops: [
+        0.1,
+        0.9
+      ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
+      padding: EdgeInsets.only(left: 15, right: 15),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextFormField(
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
+              focusColor: Colors.deepPurple,
+              fillColor: Colors.deepPurple,
               labelText: 'Email',
               alignLabelWithHint: true,
-              icon: Icon(Icons.mail),
+              border: OutlineInputBorder(),
             ),
+          ),
+          SizedBox(
+            height: 10,
           ),
           TextFormField(
             keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
               labelText: 'Password',
               alignLabelWithHint: true,
-              icon: Icon(Icons.mail),
+              border: OutlineInputBorder(),
             ),
+          ),
+          SizedBox(
+            height: 10,
           ),
           ElevatedButton(
             onPressed: () {
               _loginscreenBloc.add(LoginScreenLoginInitiatedEvent());
             },
-            style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all(Colors.blue)),
+            style: ElevatedButton.styleFrom(
+                fixedSize: Size(150, 50), primary: Colors.deepPurple.shade300),
             child: Text(
               'Login',
               style: TextStyle(
@@ -166,7 +195,26 @@ class _LoginScreenState extends State<LoginScreen> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-          )
+          ),
+          SizedBox(
+            height: 15,
+          ),
+          RichText(
+              text: TextSpan(
+                  text: 'Do not have an account? ',
+                  style: TextStyle(color: Colors.black),
+                  children: [
+                TextSpan(
+                    recognizer: TapGestureRecognizer()
+                      ..onTap = () {
+                        _loginscreenBloc.add(LoginScreenMoveToRegisterScreenEvent());
+                        print('Register');
+                      },
+                    text: 'Register',
+                    style: TextStyle(
+                        color: Colors.deepPurple.shade400,
+                        fontWeight: FontWeight.bold))
+              ]))
         ],
       ),
     ));
@@ -181,13 +229,27 @@ class _LoginScreenState extends State<LoginScreen> {
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
             child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+              filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
               child: Center(
-                child: CircularProgressIndicator(
-                  semanticsLabel: 'Loading...',
-                  color: Colors.blue,
+                  child: Container(
+                height: 100,
+                width: 100,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    CircularProgressIndicator(
+                      color: Colors.blue,
+                    ),
+                    Text(
+                      'Loading...',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold),
+                    )
+                  ],
                 ),
-              ),
+              )),
             ),
           );
         });

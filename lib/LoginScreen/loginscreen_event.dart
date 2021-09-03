@@ -3,7 +3,6 @@ part of 'loginscreen_bloc.dart';
 ///This [LoginscreenEvent] class is used to declare the different events which is triggered
 ///or added into bloc instance of [LoginscreenBloc] from main UI screen.
 
-
 ///Declaration of abstarct class [LoginscreenEvent] extending [Equatable], which is extended
 ///by all the event classes declared below.
 @immutable
@@ -44,6 +43,14 @@ class LoginScreenLoginFailedEvent extends LoginscreenEvent {
   const LoginScreenLoginFailedEvent();
   @override
   List<Object?> get props => [];
+}
+
+//Login to register screen navigation event
+class LoginScreenMoveToRegisterScreenEvent extends LoginscreenEvent {
+  const LoginScreenMoveToRegisterScreenEvent();
+
+  @override
+  List<Object> get props => [];
 }
 
 //Login unknown event

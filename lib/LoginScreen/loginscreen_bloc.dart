@@ -54,6 +54,11 @@ class LoginscreenBloc extends Bloc<LoginscreenEvent, LoginscreenState> {
       yield LoginScreenLoginFailedState();
     }
 
+    //Handling move from login to register screen
+    else if (event is LoginScreenMoveToRegisterScreenEvent) {
+      yield LoginScreenMoveToRegisterScreenState();
+    }
+
     //Handling if no event is matched
     else {
       yield LoginScreenLoginUnknownState();

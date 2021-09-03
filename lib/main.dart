@@ -1,6 +1,6 @@
 //***************************************************************
 // Created By Siddhant Satpute on 30-August-2021
-// Project Github URL - [https://github.com/siddhantsatpute]
+// Project Github URL - [https://github.com/siddhantsatpute/Flutter-Firebase-app-on-BLoC]
 // © Siddhant Satpute
 //****************************************************************
 
@@ -15,9 +15,10 @@
 
 import 'package:firebase_app_bloc/LoginScreen/loginscreen_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 //Main function to initiate the app.
-void main(){
+void main() {
   //Call to run the app
   runApp(FirebaseDemoApp());
 }
@@ -26,13 +27,18 @@ void main(){
 class FirebaseDemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-      return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Firebase Demo',
-        theme: ThemeData(
-          primarySwatch: Colors.blue
-        ),
-        home: LoginScreen(),
-      );
+
+    //Set the system properties for the app
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+        statusBarColor: Colors.deepPurple.shade300,
+        statusBarIconBrightness: Brightness.light));
+
+    //Main app initiation
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Firebase Demo',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: LoginScreen(),
+    );
   }
 }
