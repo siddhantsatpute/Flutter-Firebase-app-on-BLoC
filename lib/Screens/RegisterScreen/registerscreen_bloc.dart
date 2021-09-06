@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_app_bloc/Database/UserData.dart';
 
 part 'registerscreen_event.dart';
 part 'registerscreen_state.dart';
@@ -26,6 +27,15 @@ class RegisterScreenBloc
 
     //In progress state
     else if (event is RegistrationInProgressEvent) {
+
+      Map<String, dynamic> user = {
+        'name': event.userName,
+        'password': event.password
+      };
+
+      await UserData().insertUserData(user);
+      await UserData().printTable();
+
       yield RegistrationInProgressState();
     }
 

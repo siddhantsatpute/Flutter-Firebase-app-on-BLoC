@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:firebase_app_bloc/Database/UserData.dart';
 import 'package:meta/meta.dart';
 
 part 'loginscreen_event.dart';
@@ -41,6 +43,14 @@ class LoginscreenBloc extends Bloc<LoginscreenEvent, LoginscreenState> {
 
     //Handling login in progress event
     else if (event is LoginScreenLoginInProgressEvent) {
+      Map<String, dynamic> user = {
+        'name': event.userName,
+        'password': event.password
+      };
+
+      await UserData().fetchUser(event.userName, event.password);
+      await UserData().printTable();
+
       yield LoginScreenLoginInProgressState();
     }
 

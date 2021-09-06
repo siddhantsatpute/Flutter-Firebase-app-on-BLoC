@@ -13,12 +13,21 @@
 ///different states, their respective events and business logic associated with it. Although all these
 ///things will be written down in separate files.
 
-import 'package:firebase_app_bloc/LoginScreen/loginscreen_ui.dart';
+import 'package:firebase_app_bloc/Database/Database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'Screens/LoginScreen/loginscreen_ui.dart';
+
 //Main function to initiate the app.
 void main() {
+
+  //Ensuring widgets binding
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //Initializing database and creating tables
+  DatabaseBuilder.instance.database;
+
   //Call to run the app
   runApp(FirebaseDemoApp());
 }
@@ -27,7 +36,6 @@ void main() {
 class FirebaseDemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-
     //Set the system properties for the app
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
         statusBarColor: Colors.deepPurple.shade300,

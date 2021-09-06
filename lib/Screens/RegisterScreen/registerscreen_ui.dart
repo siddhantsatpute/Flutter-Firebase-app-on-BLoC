@@ -1,4 +1,5 @@
-import 'package:firebase_app_bloc/RegisterScreen/registerscreen_bloc.dart';
+import 'package:firebase_app_bloc/AddProductsScreen/addproductsscreen_ui.dart';
+import 'package:firebase_app_bloc/Screens/RegisterScreen/registerscreen_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +13,14 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   late RegisterScreenBloc _registerscreenBloc;
 
+  TextEditingController _email = TextEditingController();
+  TextEditingController _password = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     _registerscreenBloc = RegisterScreenBloc();
+    _registerscreenBloc.add(RegistrationInitiatedEvent());
   }
 
   @override
@@ -24,28 +29,37 @@ class _RegisterScreenState extends State<RegisterScreen> {
         child: Scaffold(
       body: BlocProvider(
         create: (context) => _registerscreenBloc,
-        child: BlocListener(
-          listener: (context, state) {
+        child: BlocListener<RegisterScreenBloc, RegisterscreenState>(
+          listener: (context, state) async {
             //Handle/Display Non UI binded widgets like dialogs, snackbar, navigator, etc.
+            if (state is RegistrationSuccessState) {
+              await Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => AddProductsScreen()));
+              _registerscreenBloc.add(RegistrationFailedEvent());
+            }
           },
-          child: BlocBuilder(builder: (context, state) {
-            if (state is RegistrationInitialState) {
-            } else if (state is RegistrationInitiatedState) {
-            } else if (state is RegistrationInProgressState) {
-            } else if (state is RegistrationSuccessState) {
-            } else if (state is RegistrationFailedState) {
-            } else if (state is RegistrationValidationSuccessState) {
-            } else if (state is RegistrationValidationFailedState) {
-            } else if (state is RegistrationUnknownState) {}
+          child: BlocBuilder<RegisterScreenBloc, RegisterscreenState>(
+              bloc: _registerscreenBloc,
+              builder: (context, state) {
+                if (state is RegistrationInitialState) {
+                  return registerScreenUi(context);
+                } else if (state is RegistrationInitiatedState) {
+                  _registerscreenBloc.add(RegistrationInProgressEvent(
+                      userName: _email.text, password: _password.text));
+                } else if (state is RegistrationInProgressState) {
+                } else if (state is RegistrationFailedState) {
+                } else if (state is RegistrationValidationSuccessState) {
+                } else if (state is RegistrationValidationFailedState) {
+                } else if (state is RegistrationUnknownState) {}
 
-            return registerScreenUi();
-          }),
+                return registerScreenUi(context);
+              }),
         ),
       ),
     ));
   }
 
-  Widget registerScreenUi() {
+  Widget registerScreenUi(BuildContext context) {
     return Form(
         child: Container(
       margin: EdgeInsets.only(left: 15, right: 15),
@@ -54,6 +68,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         children: [
           TextFormField(
             keyboardType: TextInputType.emailAddress,
+            controller: _email,
             decoration: InputDecoration(
               labelText: 'Email',
               alignLabelWithHint: true,
@@ -65,6 +80,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           TextFormField(
             keyboardType: TextInputType.visiblePassword,
+            controller: _password,
             decoration: InputDecoration(
               labelText: 'Password',
               alignLabelWithHint: true,
@@ -76,7 +92,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
           ElevatedButton(
             onPressed: () {
-              //_registerscreenBloc.add(RegistrationInitiatedEvent());
+              _registerscreenBloc.add(RegistrationInitiatedEvent());
             },
             style: ElevatedButton.styleFrom(
                 fixedSize: Size(150, 50), primary: Colors.blue),

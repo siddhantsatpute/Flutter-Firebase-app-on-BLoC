@@ -8,8 +8,9 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:firebase_app_bloc/LoginScreen/loginscreen_bloc.dart';
-import 'package:firebase_app_bloc/RegisterScreen/registerscreen_ui.dart';
+import 'package:firebase_app_bloc/AddProductsScreen/addproductsscreen_ui.dart';
+import 'package:firebase_app_bloc/Screens/LoginScreen/loginscreen_bloc.dart';
+import 'package:firebase_app_bloc/Screens/RegisterScreen/registerscreen_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,9 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   ///Declaring an instance of [LoginscreenBloc] to use bloc for state management of Login screen.
   late LoginscreenBloc _loginscreenBloc;
+
+  TextEditingController _emailCOntroller = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
 
   @override
   void initState() {
@@ -73,7 +77,7 @@ class _LoginScreenState extends State<LoginScreen> {
             create: (context) => _loginscreenBloc,
             //Registering BlocListener as the child of BlocProvider
             child: BlocListener<LoginscreenBloc, LoginscreenState>(
-              listener: (context, state) {
+              listener: (context, state) async {
                 //Handling state of Login in progress. Here as we want to show the loading dialog
                 //hence we are handling it in BlocListener.
                 if (state is LoginScreenLoginInProgressState) {
@@ -83,13 +87,26 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
                   loginForm(context);
                   showLoader(context);
-                } //State to handle avigation to register screen
+                }
+
+                //State to handle avigation to register screen
                 else if (state is LoginScreenMoveToRegisterScreenState) {
-                  Navigator.push(
+                  await Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => RegisterScreen()));
+
+                  _loginscreenBloc.add(LoginscreenInitialEvent());
+                }
+
+                //State to handle login success state
+                else if (state is LoginScreenLoginSuccessState) {
+                  log('Login Success State');
+                  hideLoader(context);
+                  await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => RegisterScreen(),
-                          maintainState: true));
+                          builder: (context) => AddProductsScreen()));
+
+                  _loginscreenBloc.add(LoginscreenInitialEvent());
                 }
 
                 ///All the widgets which is not binded directly with the UI of the screen,
@@ -111,15 +128,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   //State to handle login intiated state - triggers when user tap on Login button
                   else if (state is LoginScreenLoginInitiatedState) {
                     log('Login Initiated State');
-                    _loginscreenBloc.add(LoginScreenLoginInProgressEvent());
-                    return Container();
-                  }
-
-                  //State to handle login success state
-                  else if (state is LoginScreenLoginSuccessState) {
-                    log('Login Success State');
-                    _loginscreenBloc.add(LoginscreenInitialEvent());
-                    hideLoader(context);
+                    _loginscreenBloc.add(LoginScreenLoginInProgressEvent(
+                        userName: _emailCOntroller.text,
+                        password: _passwordController.text));
                     return Container();
                   }
 
@@ -142,26 +153,35 @@ class _LoginScreenState extends State<LoginScreen> {
 
   //Display the login form UI
   Widget loginForm(BuildContext context) {
+    FocusNode emailFocus = FocusNode();
+    FocusNode passwordFocus = FocusNode();
+
+    bool _isPasswordVisible = false;
+
     return Form(
         child: Container(
       decoration: BoxDecoration(
           gradient: LinearGradient(colors: [
         //Colors.teal.shade200,
-        Colors.lightBlue.shade100,
-        Colors.deepPurple.shade300
+        Colors.white,
+        Colors.deepPurple.shade200
       ], stops: [
         0.1,
-        0.9
+        2.0
       ], begin: Alignment.topCenter, end: Alignment.bottomCenter)),
       padding: EdgeInsets.only(left: 15, right: 15),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           TextFormField(
+            controller: _emailCOntroller,
+            focusNode: emailFocus,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecoration(
-              focusColor: Colors.deepPurple,
-              fillColor: Colors.deepPurple,
+              focusColor:
+                  emailFocus.hasFocus ? Colors.deepPurple : Colors.transparent,
+              fillColor:
+                  emailFocus.hasFocus ? Colors.deepPurple : Colors.transparent,
               labelText: 'Email',
               alignLabelWithHint: true,
               border: OutlineInputBorder(),
@@ -171,12 +191,30 @@ class _LoginScreenState extends State<LoginScreen> {
             height: 10,
           ),
           TextFormField(
+            controller: _passwordController,
+            focusNode: passwordFocus,
             keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
-              labelText: 'Password',
-              alignLabelWithHint: true,
-              border: OutlineInputBorder(),
-            ),
+                focusColor: emailFocus.hasFocus
+                    ? Colors.deepPurple
+                    : Colors.transparent,
+                fillColor: emailFocus.hasFocus
+                    ? Colors.deepPurple
+                    : Colors.transparent,
+                labelText: 'Password',
+                alignLabelWithHint: true,
+                border: OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
+                  icon: Icon(_isPasswordVisible
+                      ? Icons.visibility
+                      : Icons.visibility_off),
+                  color: Colors.black,
+                )),
           ),
           SizedBox(
             height: 10,
@@ -207,7 +245,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextSpan(
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {
-                        _loginscreenBloc.add(LoginScreenMoveToRegisterScreenEvent());
+                        _loginscreenBloc
+                            .add(LoginScreenMoveToRegisterScreenEvent());
                         print('Register');
                       },
                     text: 'Register',
@@ -258,5 +297,11 @@ class _LoginScreenState extends State<LoginScreen> {
   //Hides the loading from main UI
   void hideLoader(BuildContext context) {
     Navigator.pop(context);
+  }
+
+  //Move to Register screen
+  void moveToRegisterScreen() {
+    Navigator.of(context)
+        .push(MaterialPageRoute(builder: (context) => RegisterScreen()));
   }
 }

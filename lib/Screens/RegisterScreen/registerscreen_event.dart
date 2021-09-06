@@ -4,7 +4,7 @@ abstract class RegisterscreenEvent extends Equatable {
   const RegisterscreenEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 //Register Screen initial Event
@@ -25,10 +25,14 @@ class RegistrationInitiatedEvent extends RegisterscreenEvent {
 
 //Registration in progress Event
 class RegistrationInProgressEvent extends RegisterscreenEvent {
-  const RegistrationInProgressEvent();
+
+  final String? userName;
+  final String? password;
+
+  const RegistrationInProgressEvent({this.userName, this.password});
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [userName, password];
 }
 
 //Registration success Event
