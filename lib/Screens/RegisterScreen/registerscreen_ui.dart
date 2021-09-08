@@ -1,4 +1,4 @@
-import 'package:firebase_app_bloc/AddProductsScreen/addproductsscreen_ui.dart';
+import 'package:firebase_app_bloc/Screens/AddProductsScreen/addproductsscreen_ui.dart';
 import 'package:firebase_app_bloc/Screens/RegisterScreen/registerscreen_bloc.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';

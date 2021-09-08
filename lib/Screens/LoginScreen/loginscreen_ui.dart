@@ -8,9 +8,11 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
-import 'package:firebase_app_bloc/AddProductsScreen/addproductsscreen_ui.dart';
+import 'package:firebase_app_bloc/Screens/AddProductsScreen/addproductsscreen_ui.dart';
 import 'package:firebase_app_bloc/Screens/LoginScreen/loginscreen_bloc.dart';
+import 'package:firebase_app_bloc/Screens/ProductsListingScreen/productslistingscreen_ui.dart';
 import 'package:firebase_app_bloc/Screens/RegisterScreen/registerscreen_ui.dart';
+import 'package:firebase_app_bloc/Utils/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -104,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   await Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => AddProductsScreen()));
+                          builder: (context) => ProductListingScreen()));
 
                   _loginscreenBloc.add(LoginscreenInitialEvent());
                 }
@@ -257,46 +259,6 @@ class _LoginScreenState extends State<LoginScreen> {
         ],
       ),
     ));
-  }
-
-  //Display the loading on main UI when loading data from server
-  showLoader(BuildContext context) async {
-    return await showDialog(
-        context: context,
-        builder: (context) {
-          return Container(
-            height: MediaQuery.of(context).size.height,
-            width: MediaQuery.of(context).size.width,
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 0.5, sigmaY: 0.5),
-              child: Center(
-                  child: Container(
-                height: 100,
-                width: 100,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    CircularProgressIndicator(
-                      color: Colors.blue,
-                    ),
-                    Text(
-                      'Loading...',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
-              )),
-            ),
-          );
-        });
-  }
-
-  //Hides the loading from main UI
-  void hideLoader(BuildContext context) {
-    Navigator.pop(context);
   }
 
   //Move to Register screen

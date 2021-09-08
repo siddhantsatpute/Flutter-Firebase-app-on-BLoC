@@ -1,4 +1,5 @@
 import 'package:firebase_app_bloc/Database/Database.dart';
+import 'package:firebase_app_bloc/Models/Products.dart';
 import 'package:sqflite/sqflite.dart';
 
 class ProductsData {
@@ -67,8 +68,8 @@ class ProductsData {
         $productPrice REAL NOT NULL DEFAULT 0.0,
         $productOldPrice REAL NOT NULL DEFAULT 0.0,
         $productTax REAL NOT NULL DEFAULT 0.0,
-        $productCustomerReviews INTEGER NOT NULL DEFAULT 0,
-        $productCustomerRatings INTEGER NOT NULL DEFAULT 0,
+        $productCustomerReviews REAL NOT NULL DEFAULT 0,
+        $productCustomerRatings REAL NOT NULL DEFAULT 0,
         $productDiscount REAL NOT NULL DEFAULT 0.0,
         $productAddedDate TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime')),
         $productUpdatedDate TEXT NOT NULL DEFAULT (strftime('%Y-%m-%d %H:%M:%S', 'now', 'localtime'))
@@ -96,16 +97,49 @@ class ProductsData {
         where: '$productId = ?', whereArgs: [productId]);
   }
 
-  //Function to fetch all the products from Products table
-  Future<List<Map<String, dynamic>>> getAllProducts() async {
+  //Function to fetch all the products from "Products" table.
+  //Returns Products list if no data found in database then empty list.
+  Future<List<Products>> getAllProducts() async {
+    //Getting database instance
     Database? db = await DatabaseBuilder.instance.database;
-    return await db!.query(tableName);
+    //Executing query to fetch the products from "Products" table
+    List<Map<String, dynamic>> productsMapList = await db!.query(tableName);
+    //Initializing "Products" list
+    List<Products> products = [];
+    if (productsMapList.isNotEmpty) {
+      //Iterating over query result
+      productsMapList.forEach((productMap) {
+        //Converting map into object
+        Products product = Products.fromMap(productMap);
+        //Adding object into list
+        products.add(product);
+      });
+    }
+    //Returning list as result
+    return products;
+  }
+
+  //Function to fetch Products by product ID, returns null if not found.
+  Future<Products?> getProductByProductID(String productID) async {
+    //Getting database instance
+    Database? db = await DatabaseBuilder.instance.database;
+    //Executing query to fetch the product from "Products" table
+    List<Map<String, dynamic>> productListmap = await db!
+        .query(tableName, where: '$productID = ?', whereArgs: [productID]);
+    if (productListmap.isEmpty) {
+      //Return null if no data found in database
+      return null;
+    }
+    //Converting map into object
+    Products product = Products.fromMap(productListmap[0]);
+    //Returning product as result
+    return product;
   }
 
   //Function to print all the records from Products table
   Future<void> printTable() async {
-    List<Map<String, dynamic>> products = await getAllProducts();
-    print('Products table with ${products.length} entries.');
+    List<Products> products = await getAllProducts();
+    //Iterate and print each product data
     products.forEach((element) => print(element));
   }
 }

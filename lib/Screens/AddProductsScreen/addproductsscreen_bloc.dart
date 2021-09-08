@@ -16,20 +16,39 @@ class AddproductsscreenBloc
   Stream<AddproductsscreenState> mapEventToState(
     AddproductsscreenEvent event,
   ) async* {
+    //Initial event
     if (event is AddProductInitialEvent) {
       yield AddProductInitialState();
-    } else if (event is AddProductInitiatedEvent) {
+    }
+
+    //Initiated event
+    else if (event is AddProductInitiatedEvent) {
       yield AddProductInitiatedState();
-    } else if (event is AddProductInProgressEvent) {
+    }
+
+    //In progress event
+    else if (event is AddProductInProgressEvent) {
+      //Getting Products from event
       Products product = event.product;
+      //Adding product into database
       await ProductsData().addProduct(product.toMap());
+      //Printing the table
       await ProductsData().printTable();
       yield AddProductInProgressState();
-    } else if (event is AddProductSuccessEvent) {
+    }
+
+    //Success event
+    else if (event is AddProductSuccessEvent) {
       yield AddProductSuccessState();
-    } else if (event is AddProductFailureEvent) {
+    }
+
+    //Failure event
+    else if (event is AddProductFailureEvent) {
       yield AddProductFailureState();
-    } else {
+    }
+
+    //Unknown event
+    else {
       yield AddProductUnknownState();
     }
   }

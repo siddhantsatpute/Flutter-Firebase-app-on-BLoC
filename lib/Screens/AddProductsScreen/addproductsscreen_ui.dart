@@ -53,6 +53,10 @@ class _AddProductsScreenState extends State<AddProductsScreen> {
               Timer(Duration(seconds: 3),
                   () => _addproductsscreenBloc.add(AddProductSuccessEvent()));
               showLoader(context);
+            } else if (state is AddProductSuccessState) {
+              //_addproductsscreenBloc.add(AddProductInitialEvent());
+              hideLoader(context);
+              Navigator.pop(context);
             }
           },
           child: BlocBuilder<AddproductsscreenBloc, AddproductsscreenState>(
@@ -87,9 +91,6 @@ class _AddProductsScreenState extends State<AddProductsScreen> {
 
               _addproductsscreenBloc
                   .add(AddProductInProgressEvent(product: product));
-            } else if (state is AddProductSuccessState) {
-              _addproductsscreenBloc.add(AddProductInitialEvent());
-              hideLoader(context);
             } else if (state is AddProductFailureState) {
               _addproductsscreenBloc.add(AddProductInitialEvent());
               hideLoader(context);

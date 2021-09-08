@@ -2,7 +2,7 @@ import 'dart:convert';
 
 class Products {
   //ID of the product
-  String? productId;
+  int? productId;
 
   //Name of the product
   String? productName;
@@ -26,7 +26,7 @@ class Products {
   double? productTax;
 
   //Customer Reviews count
-  int? customerReviews;
+  double? customerReviews;
 
   //Customer rating count
   double? customerRating;
@@ -57,7 +57,7 @@ class Products {
   });
 
   Products copyWith({
-    String? productId,
+    int? productId,
     String? productName,
     int? stockQuantity,
     int? minimumStockQuantity,
@@ -65,7 +65,7 @@ class Products {
     double? productPrice,
     double? productOldPrice,
     double? productTax,
-    int? customerReviews,
+    double? customerReviews,
     double? customerRating,
     double? productDiscount,
     DateTime? productAddedDateTime,
@@ -113,7 +113,7 @@ class Products {
       productName: map['productName'],
       stockQuantity: map['stockQuantity'],
       minimumStockQuantity: map['minimumStockQuantity'],
-      isOutOfStock: map['isOutOfStock'],
+      isOutOfStock: map['isOutOfStock'] == 1 ? true : false,
       productPrice: map['productPrice'],
       productOldPrice: map['productOldPrice'],
       productTax: map['productTax'],
@@ -121,9 +121,9 @@ class Products {
       customerRating: map['customerRating'],
       productDiscount: map['productDiscount'],
       productAddedDateTime:
-          DateTime.fromMillisecondsSinceEpoch(map['productAddedDateTime']),
+          DateTime.parse(map['productAddedDateTime']),
       productUpdatedDateTime:
-          DateTime.fromMillisecondsSinceEpoch(map['productUpdatedDateTime']),
+          DateTime.parse(map['productUpdatedDateTime']),
     );
   }
 
